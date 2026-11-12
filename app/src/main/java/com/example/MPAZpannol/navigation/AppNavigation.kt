@@ -10,11 +10,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.MPAZpannol.ui.screens.WelcomeScreen
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.example.MPAZpannol.ui.screens.LoginScreen
 
 @Composable
 fun AppNavigation() {
 
     val navController = rememberNavController()
+    val context = LocalContext.current
 
     NavHost(
         navController = navController,
@@ -32,9 +36,15 @@ fun AppNavigation() {
         }
 
         composable("login") {
-            PantallaTemporal(
-                titulo = "Iniciar sesión",
-                onVolver = {
+            LoginScreen(
+                onLoginClick = { email, password ->
+                    Toast.makeText(
+                        context,
+                        "Validaciones del login: siguiente paso",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                onBackClick = {
                     navController.popBackStack()
                 }
             )
