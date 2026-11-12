@@ -37,10 +37,10 @@ fun AppNavigation() {
 
         composable("login") {
             LoginScreen(
-                onLoginClick = { email, password ->
+                onLoginClick = { _, _ ->
                     Toast.makeText(
                         context,
-                        "Validaciones del login: siguiente paso",
+                        "Formulario válido. Autenticación pendiente.",
                         Toast.LENGTH_SHORT
                     ).show()
                 },
