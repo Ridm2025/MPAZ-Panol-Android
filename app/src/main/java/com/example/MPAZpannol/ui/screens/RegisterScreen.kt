@@ -19,12 +19,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.MPAZpannol.viewmodel.RegisterViewModel
 
 @Composable
+
 fun RegisterScreen(
-    onRegisterClick: (String, String, String) -> Unit,
+    onRegisterSuccess: () -> Unit,
     onBackClick: () -> Unit,
     registerViewModel: RegisterViewModel = viewModel()
-) {
+){
     val state = registerViewModel.uiState
+
+    LaunchedEffect(state.registered) {
+        if (state.registered) {
+            onRegisterSuccess()
+        }
+    }
 
     var showPassword by rememberSaveable {
         mutableStateOf(false)
@@ -151,17 +158,29 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                if (registerViewModel.validateRegister()) {
-                    onRegisterClick(
-                        state.name.trim(),
-                        state.email.trim(),
-                        state.password
-                    )
-                }
+                registerViewModel.registrarUsuario()
             },
+            enabled = !state.isSaving,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Registrarse")
+            if (state.isSaving) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text("Registrarse")
+            }
+        }
+
+        state.registerError?.let { error ->
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error
+            )
         }
 
         Spacer(modifier = Modifier.height(12.dp))

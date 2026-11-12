@@ -1,10 +1,20 @@
 package com.example.MPAZpannol.viewmodel
 
+import android.app.Application
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.MPAZpannol.data.ResultadoRegistro
+import com.example.MPAZpannol.data.UsuarioRepository
+import com.example.MPAZpannol.data.local.MPAZDatabase
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
 data class RegisterUiState(
     val name: String = "",
@@ -14,10 +24,19 @@ data class RegisterUiState(
     val nameError: String? = null,
     val emailError: String? = null,
     val passwordError: String? = null,
-    val confirmPasswordError: String? = null
+    val confirmPasswordError: String? = null,
+    val registerError: String? = null,
+    val isSaving: Boolean = false,
+    val registered: Boolean = false
 )
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val repository = UsuarioRepository(
+        MPAZDatabase.getInstance(application).usuarioDao()
+    )
 
     var uiState by mutableStateOf(RegisterUiState())
         private set
@@ -25,14 +44,16 @@ class RegisterViewModel : ViewModel() {
     fun onNameChanged(value: String) {
         uiState = uiState.copy(
             name = value,
-            nameError = null
+            nameError = null,
+            registerError = null
         )
     }
 
     fun onEmailChanged(value: String) {
         uiState = uiState.copy(
             email = value,
-            emailError = null
+            emailError = null,
+            registerError = null
         )
     }
 
@@ -40,7 +61,8 @@ class RegisterViewModel : ViewModel() {
         uiState = uiState.copy(
             password = value,
             passwordError = null,
-            confirmPasswordError = null
+            confirmPasswordError = null,
+            registerError = null
         )
     }
 
@@ -52,6 +74,7 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun validateRegister(): Boolean {
+
         val name = uiState.name.trim()
         val email = uiState.email.trim()
         val password = uiState.password
@@ -71,7 +94,8 @@ class RegisterViewModel : ViewModel() {
         }
 
         val passwordError = when {
-            password.isEmpty() -> "La contraseña es obligatoria"
+            password.isEmpty() ->
+                "La contraseña es obligatoria"
             password.length < 6 ->
                 "Mínimo 6 caracteres"
             else -> null
@@ -98,5 +122,65 @@ class RegisterViewModel : ViewModel() {
                 emailError == null &&
                 passwordError == null &&
                 confirmError == null
+    }
+
+    fun registrarUsuario() {
+
+        if (uiState.isSaving || !validateRegister()) {
+            return
+        }
+
+        val nombre = uiState.name.trim()
+        val correo = uiState.email.trim()
+            .lowercase(Locale.ROOT)
+        val password = uiState.password
+
+        uiState = uiState.copy(
+            isSaving = true,
+            registerError = null
+        )
+
+        viewModelScope.launch {
+
+            try {
+                val resultado = withContext(Dispatchers.IO) {
+                    repository.registrarUsuario(
+                        nombre,
+                        correo,
+                        password
+                    )
+                }
+
+                when (resultado) {
+
+                    ResultadoRegistro.EXITO -> {
+                        uiState = uiState.copy(
+                            isSaving = false,
+                            registered = true,
+                            password = "",
+                            confirmPassword = ""
+                        )
+                    }
+
+                    ResultadoRegistro.CORREO_DUPLICADO -> {
+                        uiState = uiState.copy(
+                            isSaving = false,
+                            emailError =
+                                "Este correo ya está registrado"
+                        )
+                    }
+                }
+
+            } catch (e: CancellationException) {
+                throw e
+
+            } catch (e: Exception) {
+                uiState = uiState.copy(
+                    isSaving = false,
+                    registerError =
+                        "No se pudo guardar la cuenta"
+                )
+            }
+        }
     }
 }

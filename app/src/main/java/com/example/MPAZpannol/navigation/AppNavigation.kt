@@ -53,12 +53,18 @@ fun AppNavigation() {
 
         composable("register") {
             RegisterScreen(
-                onRegisterClick = { _, _, _ ->
+                onRegisterSuccess = {
                     Toast.makeText(
                         context,
-                        "Formulario válido. Guardado pendiente.",
+                        "Cuenta registrada correctamente",
                         Toast.LENGTH_LONG
                     ).show()
+
+                    navController.navigate("login") {
+                        popUpTo("register") {
+                            inclusive = true
+                        }
+                    }
                 },
                 onBackClick = {
                     navController.popBackStack()
