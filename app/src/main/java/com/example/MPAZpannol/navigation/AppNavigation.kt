@@ -13,6 +13,7 @@ import com.example.MPAZpannol.ui.screens.WelcomeScreen
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import com.example.MPAZpannol.ui.screens.LoginScreen
+import com.example.MPAZpannol.ui.screens.RegisterScreen
 
 @Composable
 fun AppNavigation() {
@@ -51,9 +52,15 @@ fun AppNavigation() {
         }
 
         composable("register") {
-            PantallaTemporal(
-                titulo = "Registrarse",
-                onVolver = {
+            RegisterScreen(
+                onRegisterClick = { _, _, _ ->
+                    Toast.makeText(
+                        context,
+                        "Formulario válido. Guardado pendiente.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                },
+                onBackClick = {
                     navController.popBackStack()
                 }
             )
