@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.MPAZpannol.ui.theme.MPAZPañolTheme
+import com.example.MPAZpannol.ui.screens.WelcomeScreen
+import android.widget.Toast
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,12 +21,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MPAZPañolTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                WelcomeScreen(
+                    onLoginClick = {
+                        Toast.makeText(
+                            this,
+                            "Inicio de sesión próximamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    onRegisterClick = {
+                        Toast.makeText(
+                            this,
+                            "Registro próximamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
             }
         }
     }
