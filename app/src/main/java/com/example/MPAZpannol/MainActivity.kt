@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MPAZPañolTheme {
+            MPAZPañolTheme(darkTheme = false) {
                 WelcomeScreen(
                     onLoginClick = {
                         Toast.makeText(
