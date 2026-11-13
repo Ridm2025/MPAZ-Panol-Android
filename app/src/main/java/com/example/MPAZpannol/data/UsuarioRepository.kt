@@ -41,4 +41,25 @@ class UsuarioRepository(
 
         return ResultadoRegistro.EXITO
     }
+
+    suspend fun iniciarSesion(
+        correo: String,
+        password: String
+    ): UsuarioEntity? {
+
+        val usuario = usuarioDao.buscarPorCorreo(correo)
+            ?: return null
+
+        val passwordCorrecta = PasswordHasher.verificar(
+            password = password,
+            hashGuardado = usuario.passwordHash,
+            saltGuardado = usuario.passwordSalt
+        )
+
+        return if (passwordCorrecta) {
+            usuario
+        } else {
+            null
+        }
+    }
 }
