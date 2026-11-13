@@ -12,11 +12,15 @@ import com.example.MPAZpannol.ui.screens.LoginScreen
 import com.example.MPAZpannol.ui.screens.RegisterScreen
 import com.example.MPAZpannol.ui.screens.HomeScreen
 import com.example.MPAZpannol.ui.screens.CatalogoScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.MPAZpannol.viewmodel.CarritoViewModel
+import com.example.MPAZpannol.ui.screens.CarritoScreen
 
 @Composable
 fun AppNavigation() {
 
     val navController = rememberNavController()
+    val carritoViewModel: CarritoViewModel = viewModel()
     val context = LocalContext.current
 
     var nombreUsuario by rememberSaveable {
@@ -97,7 +101,7 @@ fun AppNavigation() {
                     navController.navigate("catalogo")
                 },
                 onLogout = {
-
+                    carritoViewModel.vaciar()
                     nombreUsuario = ""
                     rolUsuario = ""
 
@@ -113,9 +117,46 @@ fun AppNavigation() {
         }
 
         composable("catalogo") {
+
             CatalogoScreen(
                 onBackClick = {
                     navController.popBackStack()
+                },
+                onAgregarClick = { equipo ->
+
+                    val agregado = carritoViewModel.agregar(equipo)
+
+                    Toast.makeText(
+                        context,
+                        if (agregado) {
+                            "Equipo agregado al carrito"
+                        } else {
+                            "No hay más unidades disponibles"
+                        },
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                onCarritoClick = {
+                    navController.navigate("carrito")
+                },
+                cantidadCarrito = carritoViewModel.cantidadTotal
+            )
+        }
+        composable("carrito") {
+
+            CarritoScreen(
+                productos = carritoViewModel.productos,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onAgregarClick = { equipo ->
+                    carritoViewModel.agregar(equipo)
+                },
+                onQuitarClick = { equipoId ->
+                    carritoViewModel.quitar(equipoId)
+                },
+                onVaciarClick = {
+                    carritoViewModel.vaciar()
                 }
             )
         }

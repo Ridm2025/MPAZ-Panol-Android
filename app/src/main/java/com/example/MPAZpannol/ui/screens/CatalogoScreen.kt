@@ -13,10 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.MPAZpannol.viewmodel.CatalogoViewModel
+import com.example.MPAZpannol.data.local.EquipoEntity
 
 @Composable
 fun CatalogoScreen(
     onBackClick: () -> Unit,
+    onAgregarClick: (EquipoEntity) -> Unit,
+    onCarritoClick: () -> Unit,
+    cantidadCarrito: Int,
     catalogoViewModel: CatalogoViewModel = viewModel()
 ) {
 
@@ -66,6 +70,15 @@ fun CatalogoScreen(
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = onCarritoClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Ver carrito ($cantidadCarrito)")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -207,6 +220,16 @@ fun CatalogoScreen(
                                         MaterialTheme.colorScheme.error
                                     }
                                 )
+
+                                Button(
+                                    onClick = {
+                                        onAgregarClick(equipo)
+                                    },
+                                    enabled = equipo.stockDisponible > 0,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text("Agregar al carrito")
+                                }
                             }
                         }
                     }
