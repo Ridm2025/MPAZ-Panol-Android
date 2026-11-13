@@ -12,18 +12,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 
+
 @Composable
 fun HomeScreen(
     nombreUsuario: String,
     rolUsuario: String,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onCatalogoClick: () -> Unit
 ) {
     when (rolUsuario.trim().uppercase(Locale.ROOT)) {
 
         "SOLICITANTE" -> {
             SolicitanteHomeScreen(
                 nombreUsuario = nombreUsuario,
-                onLogout = onLogout
+                onLogout = onLogout,
+                onCatalogoClick = onCatalogoClick
             )
         }
 

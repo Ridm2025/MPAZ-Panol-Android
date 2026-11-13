@@ -11,6 +11,7 @@ import com.example.MPAZpannol.ui.screens.WelcomeScreen
 import com.example.MPAZpannol.ui.screens.LoginScreen
 import com.example.MPAZpannol.ui.screens.RegisterScreen
 import com.example.MPAZpannol.ui.screens.HomeScreen
+import com.example.MPAZpannol.ui.screens.CatalogoScreen
 
 @Composable
 fun AppNavigation() {
@@ -92,6 +93,9 @@ fun AppNavigation() {
             HomeScreen(
                 nombreUsuario = nombreUsuario,
                 rolUsuario = rolUsuario,
+                onCatalogoClick = {
+                    navController.navigate("catalogo")
+                },
                 onLogout = {
 
                     nombreUsuario = ""
@@ -103,6 +107,15 @@ fun AppNavigation() {
                         }
                         launchSingleTop = true
                     }
+                }
+
+            )
+        }
+
+        composable("catalogo") {
+            CatalogoScreen(
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
