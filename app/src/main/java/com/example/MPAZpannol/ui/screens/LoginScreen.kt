@@ -20,7 +20,7 @@ import com.example.MPAZpannol.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String, String) -> Unit,
+    onLoginSuccess: (Long, String, String) -> Unit,
     onBackClick: () -> Unit,
     loginViewModel: LoginViewModel = viewModel()
 ) {
@@ -33,6 +33,7 @@ fun LoginScreen(
     LaunchedEffect(state.loggedIn) {
         if (state.loggedIn) {
             onLoginSuccess(
+                state.usuarioId,
                 state.nombreUsuario,
                 state.rolUsuario
             )

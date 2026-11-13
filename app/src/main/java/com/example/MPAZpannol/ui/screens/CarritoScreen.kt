@@ -18,7 +18,8 @@ fun CarritoScreen(
     onBackClick: () -> Unit,
     onAgregarClick: (EquipoEntity) -> Unit,
     onQuitarClick: (Long) -> Unit,
-    onVaciarClick: () -> Unit
+    onVaciarClick: () -> Unit,
+    onReservarClick: () -> Unit
 ) {
 
     Column(
@@ -138,6 +139,15 @@ fun CarritoScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Vaciar carrito")
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = onReservarClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Continuar a reserva")
             }
 
             Spacer(modifier = Modifier.height(12.dp))

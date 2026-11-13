@@ -24,7 +24,8 @@ data class LoginUiState(
     val isLoading: Boolean = false,
     val loggedIn: Boolean = false,
     val nombreUsuario: String = "",
-    val rolUsuario: String = ""
+    val rolUsuario: String = "",
+    val usuarioId: Long = 0L,
 )
 
 class LoginViewModel(
@@ -120,6 +121,7 @@ class LoginViewModel(
                         loggedIn = true,
                         nombreUsuario = usuario.nombre,
                         rolUsuario = usuario.rol,
+                        usuarioId = usuario.id,
                         password = ""
                     )
 

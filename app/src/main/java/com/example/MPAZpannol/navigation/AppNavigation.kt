@@ -15,6 +15,7 @@ import com.example.MPAZpannol.ui.screens.CatalogoScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.MPAZpannol.viewmodel.CarritoViewModel
 import com.example.MPAZpannol.ui.screens.CarritoScreen
+import com.example.MPAZpannol.ui.screens.ReservaScreen
 
 @Composable
 fun AppNavigation() {
@@ -29,6 +30,10 @@ fun AppNavigation() {
 
     var rolUsuario by rememberSaveable {
         mutableStateOf("")
+    }
+
+    var usuarioId by rememberSaveable {
+        mutableStateOf(0L)
     }
 
     NavHost(
@@ -74,8 +79,9 @@ fun AppNavigation() {
         composable("login") {
 
             LoginScreen(
-                onLoginSuccess = { nombre, rol ->
 
+                onLoginSuccess = { id, nombre, rol ->
+                    usuarioId = id
                     nombreUsuario = nombre
                     rolUsuario = rol
 
@@ -104,6 +110,7 @@ fun AppNavigation() {
                     carritoViewModel.vaciar()
                     nombreUsuario = ""
                     rolUsuario = ""
+                    usuarioId = 0L
 
                     navController.navigate("welcome") {
                         popUpTo("home") {
@@ -142,8 +149,8 @@ fun AppNavigation() {
                 cantidadCarrito = carritoViewModel.cantidadTotal
             )
         }
-        composable("carrito") {
 
+        composable("carrito") {
             CarritoScreen(
                 productos = carritoViewModel.productos,
                 onBackClick = {
@@ -157,6 +164,36 @@ fun AppNavigation() {
                 },
                 onVaciarClick = {
                     carritoViewModel.vaciar()
+                },
+                onReservarClick = {
+                    navController.navigate("reserva")
+                }
+            )
+        }
+
+        composable("reserva") {
+            ReservaScreen(
+                usuarioId = usuarioId,
+                productos = carritoViewModel.productos,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onReservaCreada = { id ->
+
+                    Toast.makeText(
+                        context,
+                        "Solicitud #$id registrada correctamente",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    carritoViewModel.vaciar()
+
+                    navController.navigate("home") {
+                        popUpTo("home") {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
