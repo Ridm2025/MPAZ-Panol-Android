@@ -10,7 +10,8 @@ import androidx.compose.ui.Modifier
 fun AdministradorHomeScreen(
     nombreUsuario: String,
     onLogout: () -> Unit,
-    onPendientesClick: () -> Unit
+    onPendientesClick: () -> Unit,
+    onGestionPrestamosClick: () -> Unit
 ) {
 
     PanelBase(
@@ -25,6 +26,13 @@ fun AdministradorHomeScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Solicitudes pendientes")
+        }
+
+        Button(
+            onClick = onGestionPrestamosClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Gestionar entregas y devoluciones")
         }
 
         ModuloPendiente(

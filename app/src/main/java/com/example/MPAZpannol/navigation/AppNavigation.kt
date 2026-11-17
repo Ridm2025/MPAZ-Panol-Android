@@ -18,6 +18,7 @@ import com.example.MPAZpannol.ui.screens.CarritoScreen
 import com.example.MPAZpannol.ui.screens.ReservaScreen
 import com.example.MPAZpannol.ui.screens.MisSolicitudesScreen
 import com.example.MPAZpannol.ui.screens.SolicitudesPendientesScreen
+import com.example.MPAZpannol.ui.screens.GestionPrestamosScreen
 
 @Composable
 fun AppNavigation() {
@@ -124,6 +125,9 @@ fun AppNavigation() {
                         launchSingleTop = true
                     }
                 },
+                onGestionPrestamosClick = {
+                    navController.navigate("gestion_prestamos")
+                },
                 onPendientesClick = {
                     navController.navigate("solicitudes_pendientes")
                 },
@@ -222,6 +226,34 @@ fun AppNavigation() {
             ) {
 
                 SolicitudesPendientesScreen(
+                    administradorId = usuarioId,
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+
+            } else {
+
+                LaunchedEffect(Unit) {
+                    Toast.makeText(
+                        context,
+                        "Acceso solo para administradores",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    navController.popBackStack()
+                }
+            }
+        }
+
+        composable("gestion_prestamos") {
+
+            if (
+                rolUsuario == "ADMINISTRADOR" &&
+                usuarioId > 0L
+            ) {
+
+                GestionPrestamosScreen(
                     administradorId = usuarioId,
                     onBackClick = {
                         navController.popBackStack()

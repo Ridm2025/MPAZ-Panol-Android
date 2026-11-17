@@ -187,4 +187,61 @@ interface ReservaDao {
         nuevoEstado: String,
         motivoRechazo: String?
     ): Int
+
+    @Query(
+        """
+    SELECT
+        r.id AS id,
+        u.nombre AS nombreSolicitante,
+        u.correo AS correoSolicitante,
+        r.sala AS sala,
+        r.inicioMillis AS inicioMillis,
+        r.finMillis AS finMillis,
+        r.estado AS estado,
+        COALESCE(
+            GROUP_CONCAT(
+                e.nombre || ' x' || d.cantidad,
+                ', '
+            ),
+            'Sin equipos'
+        ) AS equiposResumen
+    FROM reservas AS r
+    INNER JOIN usuarios AS u
+        ON r.usuarioId = u.id
+    LEFT JOIN reserva_detalles AS d
+        ON r.id = d.reservaId
+    LEFT JOIN equipos AS e
+        ON d.equipoId = e.id
+    WHERE r.estado IN (
+        'ACEPTADA',
+        'ENTREGADA',
+        'DEVUELTA'
+    )
+    GROUP BY
+        r.id,
+        u.nombre,
+        u.correo,
+        r.sala,
+        r.inicioMillis,
+        r.finMillis,
+        r.estado
+    ORDER BY r.inicioMillis DESC, r.id DESC
+    """
+    )
+    fun observarPrestamosEnGestion():
+            Flow<List<ReservaGestionAdmin>>
+
+    @Query(
+        """
+    UPDATE reservas
+    SET estado = :nuevoEstado
+    WHERE id = :reservaId
+      AND estado = :estadoAnterior
+    """
+    )
+    suspend fun actualizarEstadoPrestamo(
+        reservaId: Long,
+        estadoAnterior: String,
+        nuevoEstado: String
+    ): Int
 }

@@ -8,6 +8,7 @@ import com.example.MPAZpannol.viewmodel.ItemCarrito
 import com.example.MPAZpannol.data.local.ReservaResumen
 import kotlinx.coroutines.flow.Flow
 import com.example.MPAZpannol.data.local.ReservaPendienteAdmin
+import com.example.MPAZpannol.data.local.ReservaGestionAdmin
 
 class ReservaRepository(
     private val database: MPAZDatabase
@@ -200,5 +201,54 @@ class ReservaRepository(
                 "No fue posible actualizar la solicitud"
             }
         }
+    }
+
+    fun observarPrestamosEnGestion():
+            Flow<List<ReservaGestionAdmin>> {
+
+        return dao.observarPrestamosEnGestion()
+    }
+
+    suspend fun avanzarEstadoPrestamo(
+        administradorId: Long,
+        reservaId: Long
+    ): String = database.withTransaction {
+
+        val rol = dao.obtenerRolUsuario(administradorId)
+
+        require(rol == "ADMINISTRADOR") {
+            "No tienes permisos de administrador"
+        }
+
+        val reserva = dao.obtenerReservaPorId(reservaId)
+            ?: throw IllegalArgumentException(
+                "No se encontró el préstamo"
+            )
+
+        val nuevoEstado = when (reserva.estado) {
+
+            "ACEPTADA" -> "ENTREGADA"
+
+            "ENTREGADA" -> "DEVUELTA"
+
+            "DEVUELTA" -> "FINALIZADA"
+
+            else -> throw IllegalArgumentException(
+                "No se puede avanzar desde ${reserva.estado}"
+            )
+        }
+
+        val filasActualizadas =
+            dao.actualizarEstadoPrestamo(
+                reservaId = reservaId,
+                estadoAnterior = reserva.estado,
+                nuevoEstado = nuevoEstado
+            )
+
+        check(filasActualizadas == 1) {
+            "No fue posible actualizar el préstamo"
+        }
+
+        nuevoEstado
     }
 }

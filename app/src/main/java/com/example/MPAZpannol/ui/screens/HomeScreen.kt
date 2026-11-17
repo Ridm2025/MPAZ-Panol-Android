@@ -20,7 +20,8 @@ fun HomeScreen(
     onLogout: () -> Unit,
     onCatalogoClick: () -> Unit,
     onMisSolicitudesClick: () -> Unit,
-    onPendientesClick: () -> Unit
+    onPendientesClick: () -> Unit,
+    onGestionPrestamosClick: () -> Unit
 ) {
     when (rolUsuario.trim().uppercase(Locale.ROOT)) {
 
@@ -37,7 +38,8 @@ fun HomeScreen(
             AdministradorHomeScreen(
                 nombreUsuario = nombreUsuario,
                 onLogout = onLogout,
-                onPendientesClick = onPendientesClick
+                onPendientesClick = onPendientesClick,
+                onGestionPrestamosClick = onGestionPrestamosClick
             )
         }
 
