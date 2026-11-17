@@ -4,6 +4,7 @@ import com.example.MPAZpannol.data.local.CatalogoDao
 import com.example.MPAZpannol.data.local.CategoriaEntity
 import com.example.MPAZpannol.data.local.EquipoEntity
 import kotlinx.coroutines.flow.Flow
+import com.example.MPAZpannol.data.local.InventarioResumen
 
 class CatalogoRepository(
     private val catalogoDao: CatalogoDao
@@ -11,6 +12,12 @@ class CatalogoRepository(
 
     fun observarEquipos(): Flow<List<EquipoEntity>> {
         return catalogoDao.observarEquipos()
+    }
+
+    fun observarResumenInventario():
+            Flow<List<InventarioResumen>> {
+
+        return catalogoDao.observarResumenInventario()
     }
 
     suspend fun obtenerCategorias(): List<CategoriaEntity> {

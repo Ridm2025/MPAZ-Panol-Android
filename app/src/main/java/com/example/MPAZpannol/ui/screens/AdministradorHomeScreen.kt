@@ -11,7 +11,8 @@ fun AdministradorHomeScreen(
     nombreUsuario: String,
     onLogout: () -> Unit,
     onPendientesClick: () -> Unit,
-    onGestionPrestamosClick: () -> Unit
+    onGestionPrestamosClick: () -> Unit,
+    onInventarioClick: () -> Unit
 ) {
 
     PanelBase(
@@ -35,11 +36,12 @@ fun AdministradorHomeScreen(
             Text("Gestionar entregas y devoluciones")
         }
 
-        ModuloPendiente(
-            titulo = "Administrar inventario",
-            descripcion =
-                "Gestiona los equipos y las cantidades disponibles."
-        )
+        Button(
+            onClick = onInventarioClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Administrar inventario")
+        }
 
         ModuloPendiente(
             titulo = "Historial de préstamos",
