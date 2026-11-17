@@ -129,6 +129,20 @@ fun GestionPrestamosScreen(
                                 "Equipos: ${reserva.equiposResumen}"
                             )
 
+                            reserva.entregaRealMillis?.let { instante ->
+                                Text(
+                                    text = "Entrega real: " +
+                                            formatearFechaPrestamo(instante)
+                                )
+                            }
+
+                            reserva.devolucionRealMillis?.let { instante ->
+                                Text(
+                                    text = "Devolución real: " +
+                                            formatearFechaPrestamo(instante)
+                                )
+                            }
+
                             val accion = when (reserva.estado) {
                                 "ACEPTADA" -> "Registrar entrega"
                                 "ENTREGADA" -> "Registrar devolución"

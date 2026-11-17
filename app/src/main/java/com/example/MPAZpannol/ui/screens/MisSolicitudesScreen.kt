@@ -133,6 +133,20 @@ fun MisSolicitudesScreen(
                                 )
 
 
+                                reserva.entregaRealMillis?.let { instante ->
+                                    Text(
+                                        text = "Entregado el: " +
+                                                formatearFecha(instante)
+                                    )
+                                }
+
+                                reserva.devolucionRealMillis?.let { instante ->
+                                    Text(
+                                        text = "Devuelto el: " +
+                                                formatearFecha(instante)
+                                    )
+                                }
+
                                 if (reserva.estado == "RECHAZADA") {
 
                                     Spacer(modifier = Modifier.height(8.dp))

@@ -225,25 +225,82 @@ class ReservaRepository(
                 "No se encontró el préstamo"
             )
 
-        val nuevoEstado = when (reserva.estado) {
+        val instanteActual = System.currentTimeMillis()
 
-            "ACEPTADA" -> "ENTREGADA"
+        val nuevoEstado: String
+        val filasActualizadas: Int
 
-            "ENTREGADA" -> "DEVUELTA"
+        when (reserva.estado) {
 
-            "DEVUELTA" -> "FINALIZADA"
+            "ACEPTADA" -> {
 
-            else -> throw IllegalArgumentException(
-                "No se puede avanzar desde ${reserva.estado}"
-            )
+                val detalles = dao.obtenerDetalles(reservaId)
+
+                require(detalles.isNotEmpty()) {
+                    "La reserva no contiene equipos"
+                }
+
+                for (detalle in detalles) {
+
+                    val capacidadOperativa =
+                        dao.obtenerStockDisponible(
+                            detalle.equipoId
+                        ) ?: 0
+
+                    val cantidadFuera =
+                        dao.obtenerCantidadEntregada(
+                            detalle.equipoId
+                        )
+
+                    require(
+                        detalle.cantidad > 0 &&
+                                detalle.cantidad.toLong() +
+                                cantidadFuera.toLong() <=
+                                capacidadOperativa.toLong()
+                    ) {
+                        "No hay unidades físicas suficientes " +
+                                "para realizar la entrega"
+                    }
+                }
+
+                filasActualizadas =
+                    dao.registrarEntregaReal(
+                        reservaId = reservaId,
+                        instante = instanteActual
+                    )
+
+                nuevoEstado = "ENTREGADA"
+            }
+
+            "ENTREGADA" -> {
+
+                filasActualizadas =
+                    dao.registrarDevolucionReal(
+                        reservaId = reservaId,
+                        instante = instanteActual
+                    )
+
+                nuevoEstado = "DEVUELTA"
+            }
+
+            "DEVUELTA" -> {
+
+                filasActualizadas =
+                    dao.actualizarEstadoPrestamo(
+                        reservaId = reservaId,
+                        estadoAnterior = "DEVUELTA",
+                        nuevoEstado = "FINALIZADA"
+                    )
+
+                nuevoEstado = "FINALIZADA"
+            }
+
+            else -> {
+                throw IllegalArgumentException(
+                    "No se puede avanzar desde ${reserva.estado}"
+                )
+            }
         }
-
-        val filasActualizadas =
-            dao.actualizarEstadoPrestamo(
-                reservaId = reservaId,
-                estadoAnterior = reserva.estado,
-                nuevoEstado = nuevoEstado
-            )
 
         check(filasActualizadas == 1) {
             "No fue posible actualizar el préstamo"

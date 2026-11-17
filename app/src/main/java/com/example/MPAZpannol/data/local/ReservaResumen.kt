@@ -7,5 +7,7 @@ data class ReservaResumen(
     val finMillis: Long,
     val estado: String,
     val equiposResumen: String,
-    val motivoRechazo: String? = null
+    val motivoRechazo: String? = null,
+    val entregaRealMillis: Long? = null,
+    val devolucionRealMillis: Long? = null
 )

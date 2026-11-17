@@ -62,6 +62,9 @@ interface ReservaDao {
         r.finMillis AS finMillis,
         r.estado AS estado,
         r.motivoRechazo AS motivoRechazo,
+        r.entregaRealMillis AS entregaRealMillis,
+        r.devolucionRealMillis AS devolucionRealMillis,
+
         COALESCE(
             GROUP_CONCAT(
                 e.nombre || ' x' || d.cantidad,
@@ -126,7 +129,9 @@ interface ReservaDao {
         r.inicioMillis,
         r.finMillis,
         r.estado,
-        r.creadaMillis
+        r.creadaMillis,
+        r.entregaRealMillis,
+        r.devolucionRealMillis
     ORDER BY r.creadaMillis ASC, r.id ASC
     """
     )
@@ -198,6 +203,8 @@ interface ReservaDao {
         r.inicioMillis AS inicioMillis,
         r.finMillis AS finMillis,
         r.estado AS estado,
+        r.entregaRealMillis AS entregaRealMillis,
+        r.devolucionRealMillis AS devolucionRealMillis,
         COALESCE(
             GROUP_CONCAT(
                 e.nombre || ' x' || d.cantidad,
@@ -224,7 +231,9 @@ interface ReservaDao {
         r.sala,
         r.inicioMillis,
         r.finMillis,
-        r.estado
+        r.estado,
+        r.entregaRealMillis,
+        r.devolucionRealMillis
     ORDER BY r.inicioMillis DESC, r.id DESC
     """
     )
@@ -239,9 +248,58 @@ interface ReservaDao {
       AND estado = :estadoAnterior
     """
     )
+
     suspend fun actualizarEstadoPrestamo(
         reservaId: Long,
         estadoAnterior: String,
         nuevoEstado: String
+    ): Int
+
+    @Query(
+        """
+    SELECT COALESCE(SUM(d.cantidad), 0)
+    FROM reserva_detalles AS d
+    INNER JOIN reservas AS r
+        ON d.reservaId = r.id
+    WHERE d.equipoId = :equipoId
+      AND r.estado = 'ENTREGADA'
+    """
+    )
+    suspend fun obtenerCantidadEntregada(
+        equipoId: Long
+    ): Int
+
+    @Query(
+        """
+    UPDATE reservas
+    SET estado = 'ENTREGADA',
+        entregaRealMillis = :instante
+    WHERE id = :reservaId
+      AND estado = 'ACEPTADA'
+      AND entregaRealMillis IS NULL
+    """
+    )
+    suspend fun registrarEntregaReal(
+        reservaId: Long,
+        instante: Long
+    ): Int
+
+    @Query(
+        """
+    UPDATE reservas
+    SET estado = 'DEVUELTA',
+        devolucionRealMillis = :instante
+    WHERE id = :reservaId
+      AND estado = 'ENTREGADA'
+      AND devolucionRealMillis IS NULL
+      AND (
+          entregaRealMillis IS NULL
+          OR entregaRealMillis <= :instante
+      )
+    """
+    )
+    suspend fun registrarDevolucionReal(
+        reservaId: Long,
+        instante: Long
     ): Int
 }
