@@ -14,7 +14,37 @@ interface CatalogoDao {
     suspend fun obtenerCategorias(): List<CategoriaEntity>
 
     @Query(
-        "SELECT * FROM equipos WHERE activo = 1 ORDER BY nombre"
+        """
+    SELECT
+        e.id AS id,
+        e.nombre AS nombre,
+        e.categoriaId AS categoriaId,
+        e.descripcion AS descripcion,
+        e.stockTotal AS stockTotal,
+
+        MAX(
+            0,
+            e.stockDisponible - COALESCE(
+                (
+                    SELECT SUM(d.cantidad)
+                    FROM reserva_detalles AS d
+                    INNER JOIN reservas AS r
+                        ON r.id = d.reservaId
+                    WHERE d.equipoId = e.id
+                      AND r.estado = 'ENTREGADA'
+                ),
+                0
+            )
+        ) AS stockDisponible,
+
+        e.activo AS activo
+
+    FROM equipos AS e
+
+    WHERE e.activo = 1
+
+    ORDER BY e.nombre
+    """
     )
     fun observarEquipos(): Flow<List<EquipoEntity>>
 
