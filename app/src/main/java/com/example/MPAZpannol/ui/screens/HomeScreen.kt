@@ -18,7 +18,8 @@ fun HomeScreen(
     nombreUsuario: String,
     rolUsuario: String,
     onLogout: () -> Unit,
-    onCatalogoClick: () -> Unit
+    onCatalogoClick: () -> Unit,
+    onMisSolicitudesClick: () -> Unit
 ) {
     when (rolUsuario.trim().uppercase(Locale.ROOT)) {
 
@@ -26,7 +27,8 @@ fun HomeScreen(
             SolicitanteHomeScreen(
                 nombreUsuario = nombreUsuario,
                 onLogout = onLogout,
-                onCatalogoClick = onCatalogoClick
+                onCatalogoClick = onCatalogoClick,
+                onMisSolicitudesClick = onMisSolicitudesClick
             )
         }
 

@@ -10,7 +10,8 @@ import androidx.compose.ui.Modifier
 fun SolicitanteHomeScreen(
     nombreUsuario: String,
     onLogout: () -> Unit,
-    onCatalogoClick: () -> Unit
+    onCatalogoClick: () -> Unit,
+    onMisSolicitudesClick: () -> Unit
 ) {
 
     PanelBase(
@@ -33,10 +34,11 @@ fun SolicitanteHomeScreen(
                 "Solicita notebooks, proyectores y otros equipos."
         )
 
-        ModuloPendiente(
-            titulo = "Mis solicitudes",
-            descripcion =
-                "Consulta el estado de tus préstamos."
-        )
+        Button(
+            onClick = onMisSolicitudesClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Mis solicitudes")
+        }
     }
 }

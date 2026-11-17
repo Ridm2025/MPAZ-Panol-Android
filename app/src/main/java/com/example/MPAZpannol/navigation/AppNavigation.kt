@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.MPAZpannol.viewmodel.CarritoViewModel
 import com.example.MPAZpannol.ui.screens.CarritoScreen
 import com.example.MPAZpannol.ui.screens.ReservaScreen
+import com.example.MPAZpannol.ui.screens.MisSolicitudesScreen
 
 @Composable
 fun AppNavigation() {
@@ -106,6 +107,9 @@ fun AppNavigation() {
                 onCatalogoClick = {
                     navController.navigate("catalogo")
                 },
+                onMisSolicitudesClick = {
+                    navController.navigate("mis_solicitudes")
+                },
                 onLogout = {
                     carritoViewModel.vaciar()
                     nombreUsuario = ""
@@ -194,6 +198,15 @@ fun AppNavigation() {
                         }
                         launchSingleTop = true
                     }
+                }
+            )
+        }
+
+        composable("mis_solicitudes") {
+            MisSolicitudesScreen(
+                usuarioId = usuarioId,
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
