@@ -61,6 +61,7 @@ interface ReservaDao {
         r.inicioMillis AS inicioMillis,
         r.finMillis AS finMillis,
         r.estado AS estado,
+        r.motivoRechazo AS motivoRechazo,
         COALESCE(
             GROUP_CONCAT(
                 e.nombre || ' x' || d.cantidad,
@@ -80,6 +81,7 @@ interface ReservaDao {
         r.inicioMillis,
         r.finMillis,
         r.estado,
+        r.motivoRechazo,
         r.creadaMillis
     ORDER BY r.creadaMillis DESC, r.id DESC
     """
@@ -99,6 +101,7 @@ interface ReservaDao {
         r.inicioMillis AS inicioMillis,
         r.finMillis AS finMillis,
         r.estado AS estado,
+        r.motivoRechazo AS motivoRechazo,
         COALESCE(
             GROUP_CONCAT(
                 e.nombre || ' x' || d.cantidad,
@@ -130,4 +133,58 @@ interface ReservaDao {
     fun observarReservasPendientes():
             Flow<List<ReservaPendienteAdmin>>
 
+
+    @Query(
+        "SELECT rol FROM usuarios WHERE id = :usuarioId LIMIT 1"
+    )
+    suspend fun obtenerRolUsuario(
+        usuarioId: Long
+    ): String?
+
+    @Query(
+        "SELECT * FROM reservas WHERE id = :reservaId LIMIT 1"
+    )
+    suspend fun obtenerReservaPorId(
+        reservaId: Long
+    ): ReservaEntity?
+
+    @Query(
+        "SELECT * FROM reserva_detalles WHERE reservaId = :reservaId"
+    )
+    suspend fun obtenerDetalles(
+        reservaId: Long
+    ): List<ReservaDetalleEntity>
+
+    @Query(
+        """
+    SELECT COALESCE(SUM(d.cantidad), 0)
+    FROM reserva_detalles AS d
+    INNER JOIN reservas AS r
+        ON d.reservaId = r.id
+    WHERE d.equipoId = :equipoId
+      AND r.estado IN ('ACEPTADA', 'ENTREGADA')
+      AND r.inicioMillis < :finMillis
+      AND r.finMillis > :inicioMillis
+    """
+    )
+    suspend fun obtenerCantidadComprometida(
+        equipoId: Long,
+        inicioMillis: Long,
+        finMillis: Long
+    ): Int
+
+    @Query(
+        """
+    UPDATE reservas
+    SET estado = :nuevoEstado,
+        motivoRechazo = :motivoRechazo
+    WHERE id = :reservaId
+      AND estado = 'PENDIENTE'
+    """
+    )
+    suspend fun actualizarEstadoPendiente(
+        reservaId: Long,
+        nuevoEstado: String,
+        motivoRechazo: String?
+    ): Int
 }

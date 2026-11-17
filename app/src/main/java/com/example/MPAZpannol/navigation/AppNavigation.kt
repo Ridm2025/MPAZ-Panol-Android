@@ -222,6 +222,7 @@ fun AppNavigation() {
             ) {
 
                 SolicitudesPendientesScreen(
+                    administradorId = usuarioId,
                     onBackClick = {
                         navController.popBackStack()
                     }

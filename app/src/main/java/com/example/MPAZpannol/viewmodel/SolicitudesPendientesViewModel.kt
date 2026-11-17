@@ -11,6 +11,9 @@ import com.example.MPAZpannol.data.local.MPAZDatabase
 import com.example.MPAZpannol.data.local.ReservaPendienteAdmin
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 data class SolicitudesPendientesUiState(
     val solicitudes: List<ReservaPendienteAdmin> = emptyList(),
@@ -30,6 +33,89 @@ class SolicitudesPendientesViewModel(
         SolicitudesPendientesUiState()
     )
         private set
+
+    var procesandoId by mutableStateOf<Long?>(null)
+        private set
+
+    var mensajeAccion by mutableStateOf<String?>(null)
+        private set
+
+    var errorAccion by mutableStateOf<String?>(null)
+        private set
+
+    fun aceptar(
+        administradorId: Long,
+        reservaId: Long
+    ) {
+        cambiarEstado(
+            administradorId,
+            reservaId,
+            aprobar = true
+        )
+    }
+
+    fun rechazar(
+        administradorId: Long,
+        reservaId: Long,
+        motivo: String
+    ) {
+        cambiarEstado(
+            administradorId,
+            reservaId,
+            aprobar = false,
+            motivo = motivo
+        )
+    }
+
+    private fun cambiarEstado(
+        administradorId: Long,
+        reservaId: Long,
+        aprobar: Boolean,
+        motivo: String = ""
+    ) {
+
+        if (procesandoId != null) return
+
+        procesandoId = reservaId
+        mensajeAccion = null
+        errorAccion = null
+
+        viewModelScope.launch {
+
+            try {
+                withContext(Dispatchers.IO) {
+                    repository.resolverSolicitud(
+                        administradorId = administradorId,
+                        reservaId = reservaId,
+                        aprobar = aprobar,
+                        motivoRechazo = motivo
+                    )
+                }
+
+                mensajeAccion = if (aprobar) {
+                    "Solicitud #$reservaId aceptada"
+                } else {
+                    "Solicitud #$reservaId rechazada"
+                }
+
+            } catch (e: CancellationException) {
+                throw e
+
+            } catch (e: IllegalArgumentException) {
+                errorAccion = e.message
+
+            } catch (e: IllegalStateException) {
+                errorAccion = e.message
+
+            } catch (e: Exception) {
+                errorAccion =
+                    "Ocurrió un error al procesar la solicitud"
+
+            } finally {
+                procesandoId = null
+            }
+        }
+    }
 
     init {
         cargarSolicitudes()
@@ -53,6 +139,7 @@ class SolicitudesPendientesViewModel(
                         isLoading = false
                     )
                 }
+
         }
     }
 }

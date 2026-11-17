@@ -34,5 +34,8 @@ data class ReservaEntity(
 
     val estado: String = "PENDIENTE",
 
-    val creadaMillis: Long
+    val creadaMillis: Long,
+
+    val motivoRechazo: String? = null
+
 )

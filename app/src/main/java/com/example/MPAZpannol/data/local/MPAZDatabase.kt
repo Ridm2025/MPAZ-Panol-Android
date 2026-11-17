@@ -16,7 +16,7 @@ import androidx.sqlite.execSQL
         ReservaEntity::class,
         ReservaDetalleEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 
@@ -155,6 +155,22 @@ abstract class MPAZDatabase : RoomDatabase() {
                 }
             }
 
+        private val MIGRATION_3_4 =
+            object : Migration(3, 4) {
+
+                override fun migrate(
+                    connection: SQLiteConnection
+                ) {
+                    connection.execSQL(
+                        """
+                ALTER TABLE reservas
+                ADD COLUMN motivoRechazo TEXT
+                """.trimIndent()
+                    )
+                }
+            }
+
+
         fun getInstance(context: Context): MPAZDatabase {
 
             return INSTANCE ?: synchronized(this) {
@@ -164,9 +180,11 @@ abstract class MPAZDatabase : RoomDatabase() {
                     MPAZDatabase::class.java,
                     "mpaz_database"
                 )
+
                     .addMigrations(
                         MIGRATION_1_2,
-                        MIGRATION_2_3
+                        MIGRATION_2_3,
+                        MIGRATION_3_4
                     )
                     .build()
                     .also {

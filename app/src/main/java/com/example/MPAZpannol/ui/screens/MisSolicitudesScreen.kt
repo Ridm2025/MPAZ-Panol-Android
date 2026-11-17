@@ -131,6 +131,25 @@ fun MisSolicitudesScreen(
                                     text = "Equipos: " +
                                             reserva.equiposResumen
                                 )
+
+
+                                if (reserva.estado == "RECHAZADA") {
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    Text(
+                                        text = "Motivo de rechazo:",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+
+                                    Text(
+                                        text = reserva.motivoRechazo
+                                            ?.takeIf { it.isNotBlank() }
+                                            ?: "No se indicó un motivo",
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
                             }
                         }
                     }

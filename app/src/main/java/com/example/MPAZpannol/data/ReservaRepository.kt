@@ -113,4 +113,92 @@ class ReservaRepository(
 
         return dao.observarReservasPendientes()
     }
+
+    suspend fun resolverSolicitud(
+        administradorId: Long,
+        reservaId: Long,
+        aprobar: Boolean,
+        motivoRechazo: String = ""
+    ) {
+        database.withTransaction {
+
+            val rol = dao.obtenerRolUsuario(administradorId)
+
+            require(rol == "ADMINISTRADOR") {
+                "No tienes permisos de administrador"
+            }
+
+            val reserva = dao.obtenerReservaPorId(reservaId)
+                ?: throw IllegalArgumentException(
+                    "La solicitud no existe"
+                )
+
+            require(reserva.estado == "PENDIENTE") {
+                "Esta solicitud ya fue procesada"
+            }
+
+            val nuevoEstado: String
+            val motivo: String?
+
+            if (aprobar) {
+
+                require(
+                    reserva.inicioMillis > System.currentTimeMillis()
+                ) {
+                    "No puedes aceptar una reserva que ya comenzó"
+                }
+
+                val detalles = dao.obtenerDetalles(reservaId)
+
+                require(detalles.isNotEmpty()) {
+                    "La solicitud no tiene equipos"
+                }
+
+                for (detalle in detalles) {
+
+                    val stock = dao.obtenerStockDisponible(
+                        detalle.equipoId
+                    ) ?: 0
+
+                    val comprometidas =
+                        dao.obtenerCantidadComprometida(
+                            equipoId = detalle.equipoId,
+                            inicioMillis = reserva.inicioMillis,
+                            finMillis = reserva.finMillis
+                        )
+
+                    require(
+                        detalle.cantidad > 0 &&
+                                detalle.cantidad <= stock - comprometidas
+                    ) {
+                        "No hay stock suficiente para aceptar " +
+                                "la solicitud"
+                    }
+                }
+
+                nuevoEstado = "ACEPTADA"
+                motivo = null
+
+            } else {
+
+                require(motivoRechazo.trim().length >= 5) {
+                    "Debes indicar un motivo de rechazo"
+                }
+
+                nuevoEstado = "RECHAZADA"
+                motivo = motivoRechazo.trim()
+            }
+
+            val filasActualizadas =
+                dao.actualizarEstadoPendiente(
+                    reservaId = reservaId,
+                    nuevoEstado = nuevoEstado,
+                    motivoRechazo = motivo
+                )
+
+            check(filasActualizadas == 1) {
+                "No fue posible actualizar la solicitud"
+            }
+        }
+    }
 }
