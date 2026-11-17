@@ -88,4 +88,46 @@ interface ReservaDao {
         usuarioId: Long
     ): Flow<List<ReservaResumen>>
 
+    @Query(
+        """
+    SELECT
+        r.id AS id,
+        r.usuarioId AS usuarioId,
+        u.nombre AS nombreSolicitante,
+        u.correo AS correoSolicitante,
+        r.sala AS sala,
+        r.inicioMillis AS inicioMillis,
+        r.finMillis AS finMillis,
+        r.estado AS estado,
+        COALESCE(
+            GROUP_CONCAT(
+                e.nombre || ' x' || d.cantidad,
+                ', '
+            ),
+            'Sin equipos'
+        ) AS equiposResumen
+    FROM reservas AS r
+    INNER JOIN usuarios AS u
+        ON r.usuarioId = u.id
+    LEFT JOIN reserva_detalles AS d
+        ON r.id = d.reservaId
+    LEFT JOIN equipos AS e
+        ON d.equipoId = e.id
+    WHERE r.estado = 'PENDIENTE'
+    GROUP BY
+        r.id,
+        r.usuarioId,
+        u.nombre,
+        u.correo,
+        r.sala,
+        r.inicioMillis,
+        r.finMillis,
+        r.estado,
+        r.creadaMillis
+    ORDER BY r.creadaMillis ASC, r.id ASC
+    """
+    )
+    fun observarReservasPendientes():
+            Flow<List<ReservaPendienteAdmin>>
+
 }

@@ -7,6 +7,7 @@ import com.example.MPAZpannol.data.local.ReservaDetalleEntity
 import com.example.MPAZpannol.viewmodel.ItemCarrito
 import com.example.MPAZpannol.data.local.ReservaResumen
 import kotlinx.coroutines.flow.Flow
+import com.example.MPAZpannol.data.local.ReservaPendienteAdmin
 
 class ReservaRepository(
     private val database: MPAZDatabase
@@ -105,5 +106,11 @@ class ReservaRepository(
     ): Flow<List<ReservaResumen>> {
 
         return dao.observarReservasDeUsuario(usuarioId)
+    }
+
+    fun observarReservasPendientes():
+            Flow<List<ReservaPendienteAdmin>> {
+
+        return dao.observarReservasPendientes()
     }
 }

@@ -17,6 +17,7 @@ import com.example.MPAZpannol.viewmodel.CarritoViewModel
 import com.example.MPAZpannol.ui.screens.CarritoScreen
 import com.example.MPAZpannol.ui.screens.ReservaScreen
 import com.example.MPAZpannol.ui.screens.MisSolicitudesScreen
+import com.example.MPAZpannol.ui.screens.SolicitudesPendientesScreen
 
 @Composable
 fun AppNavigation() {
@@ -122,9 +123,11 @@ fun AppNavigation() {
                         }
                         launchSingleTop = true
                     }
-                }
-
-            )
+                },
+                onPendientesClick = {
+                    navController.navigate("solicitudes_pendientes")
+                },
+                )
         }
 
         composable("catalogo") {
@@ -209,6 +212,33 @@ fun AppNavigation() {
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable("solicitudes_pendientes") {
+
+            if (
+                rolUsuario == "ADMINISTRADOR" &&
+                usuarioId > 0L
+            ) {
+
+                SolicitudesPendientesScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+
+            } else {
+
+                LaunchedEffect(Unit) {
+                    Toast.makeText(
+                        context,
+                        "Acceso solo para administradores",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    navController.popBackStack()
+                }
+            }
         }
     }
 }
