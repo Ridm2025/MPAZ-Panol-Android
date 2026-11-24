@@ -16,6 +16,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import com.example.MPAZpannol.util.RecursosNativos
 
 data class InventarioUiState(
     val equipos: List<InventarioResumen> = emptyList(),
@@ -141,6 +142,9 @@ class InventarioViewModel(
             formulario = null
             errores = emptyMap()
         }
+        RecursosNativos.vibrarConfirmacion(
+            getApplication<Application>()
+        )
     }
 
     fun cambiarEstado(

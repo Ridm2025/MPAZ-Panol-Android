@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.MPAZpannol.util.RecursosNativos
 
 data class GestionPrestamosUiState(
     val prestamos: List<ReservaGestionAdmin> = emptyList(),
@@ -76,6 +77,9 @@ class GestionPrestamosViewModel(
                         reservaId
                     )
                 }
+                RecursosNativos.vibrarConfirmacion(
+                    getApplication<Application>()
+                )
 
                 uiState = uiState.copy(
                     mensaje = "Solicitud #$reservaId: $nuevoEstado"

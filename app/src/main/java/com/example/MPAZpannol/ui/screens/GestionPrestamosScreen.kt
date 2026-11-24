@@ -15,6 +15,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import com.example.MPAZpannol.ui.components.PanelRecordatorios
 
 @Composable
 fun GestionPrestamosScreen(
@@ -74,7 +75,11 @@ fun GestionPrestamosScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-
+                item {
+                    PanelRecordatorios(
+                        prestamos = gestionViewModel.uiState.prestamos
+                    )
+                }
                 items(
                     items = state.prestamos,
                     key = { it.id }
