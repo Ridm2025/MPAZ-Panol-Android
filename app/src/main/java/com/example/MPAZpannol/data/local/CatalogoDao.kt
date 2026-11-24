@@ -37,7 +37,8 @@ interface CatalogoDao {
             )
         ) AS stockDisponible,
 
-        e.activo AS activo
+        e.activo AS activo,
+        e.ubicacion AS ubicacion
 
     FROM equipos AS e
 
@@ -89,7 +90,8 @@ interface CatalogoDao {
             COALESCE(p.cantidad, 0)
         ) AS libresFisicamente,
 
-        e.activo AS activo
+        e.activo AS activo,
+        e.ubicacion AS ubicacion
 
     FROM equipos AS e
 
@@ -114,6 +116,7 @@ interface CatalogoDao {
     @Insert
     suspend fun crearEquipoAdmin(equipo: EquipoEntity): Long
 
+
     @Query(
         """
     UPDATE equipos
@@ -121,10 +124,21 @@ interface CatalogoDao {
         descripcion = :descripcion,
         categoriaId = :categoriaId,
         stockTotal = :stockTotal,
-        stockDisponible = :stockOperativo
+        stockDisponible = :stockOperativo,
+        ubicacion = :ubicacion
     WHERE id = :id
     """
     )
+    suspend fun editarEquipoAdmin(
+        id: Long,
+        nombre: String,
+        descripcion: String,
+        categoriaId: Long,
+        stockTotal: Int,
+        stockOperativo: Int,
+        ubicacion: String
+    ): Int
+
     suspend fun editarEquipoAdmin(
         id: Long,
         nombre: String,

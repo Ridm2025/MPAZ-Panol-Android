@@ -194,7 +194,16 @@ fun CatalogoScreen(
                                         .colorScheme.secondary
                                 )
 
-                                Text(equipo.descripcion)
+                                Text(
+                                    text = equipo.descripcion,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+
+                                Text(
+                                    text = "Ubicación: ${equipo.ubicacion}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
 
                                 HorizontalDivider()
 

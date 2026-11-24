@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
 
 @Entity(
     tableName = "equipos",
@@ -34,5 +35,8 @@ data class EquipoEntity(
 
     val stockDisponible: Int,
 
-    val activo: Boolean = true
+    val activo: Boolean = true,
+
+    @ColumnInfo(defaultValue = "'Sin asignar'")
+    val ubicacion: String = "Sin asignar"
 )

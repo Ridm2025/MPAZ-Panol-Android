@@ -142,6 +142,11 @@ fun InventarioAdminScreen(
                                     )
 
                                     Text(
+                                        text = "Ubicación: ${equipo.ubicacion}",
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+
+                                    Text(
                                         text = if (equipo.activo) {
                                             "Estado: ACTIVO"
                                         } else {
@@ -364,6 +369,18 @@ private fun FormularioEquipoDialog(
                     onCambio = {
                         onCambio(
                             formulario.copy(descripcion = it)
+                        )
+                    }
+                )
+
+                CampoEquipo(
+                    valor = formulario.ubicacion,
+                    etiqueta = "Ubicación del equipo",
+                    error = errores["ubicacion"],
+                    habilitado = !procesando,
+                    onCambio = {
+                        onCambio(
+                            formulario.copy(ubicacion = it)
                         )
                     }
                 )

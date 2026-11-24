@@ -8,5 +8,6 @@ data class InventarioResumen(
     val stockOperativo: Int,
     val unidadesPrestadas: Long,
     val libresFisicamente: Long,
-    val activo: Boolean
+    val activo: Boolean,
+    val ubicacion: String
 )

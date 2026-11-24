@@ -11,7 +11,8 @@ data class FormularioEquipo(
     val descripcion: String = "",
     val categoriaId: Long = 0L,
     val stockTotal: String = "",
-    val stockOperativo: String = ""
+    val stockOperativo: String = "",
+    val ubicacion: String = ""
 )
 
 fun validarEquipo(
@@ -46,6 +47,9 @@ fun validarEquipo(
             "No puede superar el stock total"
     }
 
+    if (formulario.ubicacion.isBlank()) {
+        errores["ubicacion"] = "Ingresa la ubicación del equipo"
+    }
     return errores
 }
 
@@ -105,7 +109,8 @@ class InventarioRepository(
                     categoriaId = formulario.categoriaId,
                     stockTotal = total,
                     stockDisponible = operativo,
-                    activo = true
+                    activo = true,
+                    ubicacion = formulario.ubicacion.trim()
                 )
             )
 
@@ -131,7 +136,8 @@ class InventarioRepository(
                 descripcion = formulario.descripcion.trim(),
                 categoriaId = formulario.categoriaId,
                 stockTotal = total,
-                stockOperativo = operativo
+                stockOperativo = operativo,
+                ubicacion = formulario.ubicacion.trim()
             )
 
             check(filas == 1) {

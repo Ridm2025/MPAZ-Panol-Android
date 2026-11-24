@@ -96,8 +96,8 @@ class InventarioViewModel(
                 descripcion = equipo.descripcion,
                 categoriaId = equipo.categoriaId,
                 stockTotal = equipo.stockTotal.toString(),
-                stockOperativo =
-                    equipo.stockDisponible.toString()
+                stockOperativo = equipo.stockDisponible.toString(),
+                ubicacion = equipo.ubicacion
             )
         }
     }
