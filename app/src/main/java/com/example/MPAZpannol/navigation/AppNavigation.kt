@@ -20,6 +20,7 @@ import com.example.MPAZpannol.ui.screens.MisSolicitudesScreen
 import com.example.MPAZpannol.ui.screens.SolicitudesPendientesScreen
 import com.example.MPAZpannol.ui.screens.GestionPrestamosScreen
 import com.example.MPAZpannol.ui.screens.InventarioAdminScreen
+import com.example.MPAZpannol.worker.ProgramadorRecordatorios
 
 @Composable
 fun AppNavigation() {
@@ -114,6 +115,7 @@ fun AppNavigation() {
                     navController.navigate("mis_solicitudes")
                 },
                 onLogout = {
+                    ProgramadorRecordatorios.desactivar(context)
                     carritoViewModel.vaciar()
                     nombreUsuario = ""
                     rolUsuario = ""

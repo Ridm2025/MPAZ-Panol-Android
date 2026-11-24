@@ -72,7 +72,8 @@ object RecursosNativos {
     fun mostrarRecordatorio(
         context: Context,
         titulo: String,
-        mensaje: String
+        mensaje: String,
+        notificacionId: Int = NOTIFICACION_ID
     ): Boolean {
 
         if (!tienePermisoNotificaciones(context)) {
@@ -129,7 +130,7 @@ object RecursosNativos {
                 .build()
 
             manager.notify(
-                NOTIFICACION_ID,
+                notificacionId,
                 notificacion
             )
 
