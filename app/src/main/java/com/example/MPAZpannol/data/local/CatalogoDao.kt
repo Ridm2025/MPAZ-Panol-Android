@@ -104,4 +104,58 @@ interface CatalogoDao {
     )
     fun observarResumenInventario():
             Flow<List<InventarioResumen>>
+
+    @Query("SELECT * FROM equipos WHERE id = :id LIMIT 1")
+    suspend fun buscarEquipoAdmin(id: Long): EquipoEntity?
+
+    @Query("SELECT * FROM categorias ORDER BY nombre")
+    fun observarCategoriasAdmin(): Flow<List<CategoriaEntity>>
+
+    @Insert
+    suspend fun crearEquipoAdmin(equipo: EquipoEntity): Long
+
+    @Query(
+        """
+    UPDATE equipos
+    SET nombre = :nombre,
+        descripcion = :descripcion,
+        categoriaId = :categoriaId,
+        stockTotal = :stockTotal,
+        stockDisponible = :stockOperativo
+    WHERE id = :id
+    """
+    )
+    suspend fun editarEquipoAdmin(
+        id: Long,
+        nombre: String,
+        descripcion: String,
+        categoriaId: Long,
+        stockTotal: Int,
+        stockOperativo: Int
+    ): Int
+
+    @Query("UPDATE equipos SET activo = :activo WHERE id = :id")
+    suspend fun cambiarEstadoEquipo(
+        id: Long,
+        activo: Boolean
+    ): Int
+
+    @Query(
+        """
+    SELECT COUNT(*)
+    FROM reserva_detalles AS d
+    INNER JOIN reservas AS r
+        ON r.id = d.reservaId
+    WHERE d.equipoId = :equipoId
+      AND r.estado IN (
+          'PENDIENTE',
+          'ACEPTADA',
+          'ENTREGADA'
+      )
+    """
+    )
+    suspend fun contarCompromisosActivos(
+        equipoId: Long
+    ): Int
+
 }

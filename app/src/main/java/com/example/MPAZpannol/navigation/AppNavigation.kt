@@ -286,6 +286,7 @@ fun AppNavigation() {
             ) {
 
                 InventarioAdminScreen(
+                    administradorId = usuarioId,
                     onBackClick = {
                         navController.popBackStack()
                     }
@@ -294,6 +295,7 @@ fun AppNavigation() {
             } else {
 
                 LaunchedEffect(Unit) {
+
                     Toast.makeText(
                         context,
                         "Acceso solo para administradores",
